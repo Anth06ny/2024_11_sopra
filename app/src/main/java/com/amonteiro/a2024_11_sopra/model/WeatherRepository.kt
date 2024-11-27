@@ -56,8 +56,16 @@ object WeatherRepository {
         //Verification
         //Requete
         val json : String = sendGet(URL_API + cityName)
+        Thread.sleep(5000)
         //Parsing
         val list = gson.fromJson(json, WeatherResultBean::class.java).list
+        //Traitement, je remplace le nom de l'icone par l'url
+        list.forEach {
+            it.weather.forEach {
+                it.icon = "https://openweathermap.org/img/wn/${it.icon}@4x.png"
+            }
+        }
+
         //Verification
         return list
     }
@@ -97,7 +105,7 @@ object WeatherRepository {
 // Weather
 /* -------------------------------- */
 data class WeatherResultBean(var list: List<WeatherBean>)
-data class WeatherBean(var id: String, var name:String, var main: TempBean, var wind : WindBean, var weather : List<DescriptionBean>  )
+data class WeatherBean(var id: Int, var name:String, var main: TempBean, var wind : WindBean, var weather : List<DescriptionBean>  )
 data class TempBean(var temp:Double )
 data class WindBean(var speed:Double )
 data class DescriptionBean(var description:String, var icon:String )
