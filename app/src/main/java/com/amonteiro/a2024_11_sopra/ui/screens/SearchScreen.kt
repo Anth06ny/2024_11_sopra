@@ -13,7 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.amonteiro.a2024_11_sopra.ui.theme._2024_11_sopraTheme
+import com.amonteiro.a2024_11_sopra.viewmodel.MainViewModel
 
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -30,15 +32,18 @@ fun SearchScreenPreview() {
 }
 
 @Composable
-fun SearchScreen(modifier: Modifier = Modifier) {
+fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = MainViewModel()) {
     Column (modifier= modifier) {
         println("SearchScreen()")
         Text(text = "Text1",fontSize = 20.sp)
         Spacer(Modifier.size(8.dp))
         Text(text = "Text2",fontSize = 14.sp)
-        PictureRowItem("Hello")
-        PictureRowItem("From")
-        PictureRowItem("PictureRowItem")
+
+        val list = mainViewModel.dataList.collectAsStateWithLifecycle().value
+
+        list.forEach {
+            PictureRowItem(it.title)
+        }
     }
 }
 
