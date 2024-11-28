@@ -1,5 +1,6 @@
 package com.amonteiro.a2024_11_sopra
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,11 +20,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             _2024_11_sopraTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
-                        name = "Android",
+                        name = "From onCreate",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -35,17 +37,23 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
-        text = "Hello $name!",
+        text = "Hello $name!!!!",
         modifier = modifier,
         fontSize = 20.sp,
-        color = Color.Cyan
     )
 }
 
-@Preview(showBackground = true)
+@Preview(
+    showBackground = true,
+    widthDp = 320,
+    uiMode = UI_MODE_NIGHT_YES,
+    name = "Dark",
+    showSystemUi = true
+)
+@Preview(showBackground = true, widthDp = 320)
 @Composable
 fun GreetingPreview() {
     _2024_11_sopraTheme {
-        Greeting("Android")
+        Greeting("From Preview")
     }
 }

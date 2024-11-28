@@ -56,7 +56,6 @@ object WeatherRepository {
         //Verification
         //Requete
         val json : String = sendGet(URL_API + cityName)
-        Thread.sleep(5000)
         //Parsing
         val list = gson.fromJson(json, WeatherResultBean::class.java).list
         //Traitement, je remplace le nom de l'icone par l'url
