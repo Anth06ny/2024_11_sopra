@@ -1,7 +1,9 @@
 package com.amonteiro.a2024_11_sopra.ui.screens
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,12 +26,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.amonteiro.a2024_11_sopra.R
 import com.amonteiro.a2024_11_sopra.model.PictureBean
 import com.amonteiro.a2024_11_sopra.ui.theme._2024_11_sopraTheme
@@ -47,21 +56,28 @@ fun SearchScreenPreview() {
     //Utilisé par exemple dans MainActivity.kt sous setContent {...}
     _2024_11_sopraTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            SearchScreen(modifier = Modifier.padding(innerPadding))
+
+            val mainViewModel = MainViewModel()
+            mainViewModel.loadFakeData(true, "UN message d'erreur")
+
+            SearchScreen(modifier = Modifier.padding(innerPadding), mainViewModel = mainViewModel)
         }
     }
 }
 
 @Composable
-fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = MainViewModel()) {
+fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = viewModel ()) {
     Column(modifier = modifier.fillMaxSize()) {
+        var searchText  =  rememberSaveable { mutableStateOf("")}
 
-        SearchBar()
+        SearchBar(searchText = searchText)
 
-        val list = mainViewModel.dataList.collectAsStateWithLifecycle().value
+        val list by mainViewModel.dataList.collectAsStateWithLifecycle() //.filter { it.title.contains(searchText.value, true) }
+
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)
         , modifier = modifier.weight(1f)
         ) {
+
             items(list.size) {
                 PictureRowItem(data = list[it])
             }
@@ -75,7 +91,7 @@ fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = M
                     .weight(1f))
 
             Button(
-                onClick = { /* Do something! */ },
+                onClick = { searchText.value = "" },
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                 modifier = Modifier.weight(3f)
             ) {
@@ -91,7 +107,7 @@ fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = M
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
 
             Button(
-                onClick = { /* Do something! */ },
+                onClick = { mainViewModel.loadWeathers(searchText.value) },
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                 modifier = Modifier.weight(3f)
             ) {
@@ -113,13 +129,37 @@ fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = M
 }
 
 @Composable
-fun SearchBar(modifier: Modifier = Modifier) {
-
-    var text = "toto"
+fun SearchBar(modifier: Modifier = Modifier, searchText: MutableState<String>) {
 
     TextField(
+        value = searchText.value, //Valeur affichée
+        onValueChange = { searchText.value = it }, //Nouveau texte entrée
+        leadingIcon = { //Image d'icone
+            Icon(
+                imageVector = Icons.Default.Search,
+                tint = MaterialTheme.colorScheme.primary,
+                contentDescription = null
+            )
+        },
+        singleLine = true,
+        label = { Text("Enter text") }, //Texte d'aide qui se déplace
+
+        //Comment le composant doit se placer
+        modifier = modifier
+            .fillMaxWidth() // Prend toute la largeur
+            .heightIn(min = 56.dp) //Hauteur minimum
+    )
+}
+
+//Non utilisé pour simplifier le code
+// Utilisation :
+//    var searchText by remember { mutableStateOf("") }
+//    SearchBarOfficiel(text=searchText, onValueChange = {searchText = it})
+@Composable
+fun SearchBarOfficiel(modifier: Modifier = Modifier, text:String, onValueChange: (String) -> Unit) {
+    TextField(
         value = text, //Valeur affichée
-        onValueChange = {newValue:String -> text = newValue}, //Nouveau texte entrée
+        onValueChange = onValueChange, //Nouveau texte entrée
         leadingIcon = { //Image d'icone
             Icon(
                 imageVector = Icons.Default.Search,
@@ -139,6 +179,10 @@ fun SearchBar(modifier: Modifier = Modifier) {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable //Composable affichant 1 PictureBean
 fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean) {
+
+    //by evite juste de mettre les .value
+    var expended by remember { mutableStateOf(false) }
+
     Row(modifier = modifier
         .fillMaxWidth()
         .background(MaterialTheme.colorScheme.tertiaryContainer)) {
@@ -163,16 +207,19 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean) {
 
         Column(modifier = modifier
             .fillMaxWidth()
-            .padding(5.dp)) {
+            .padding(5.dp).clickable { expended = !expended }
+        ) {
             Text(
                 text = data.title,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary
             )
+
             Text(
-                text = data.longText.take(20) + "...",
+                text = if(expended) data.longText else (data.longText.take(20) + "..."),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onTertiaryContainer
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                modifier = Modifier.animateContentSize()
             )
         }
     }

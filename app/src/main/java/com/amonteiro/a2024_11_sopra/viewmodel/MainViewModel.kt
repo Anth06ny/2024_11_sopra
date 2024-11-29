@@ -35,7 +35,8 @@ class MainViewModel : ViewModel() {
     val errorMessage = MutableStateFlow("")
 
     init {//Création d'un jeu de donnée au démarrage
-        loadFakeData()
+        ///loadFakeData()
+        println("Création ViewModel")
     }
 
     fun loadFakeData(runInProgress :Boolean = false, errorMessage:String = "" ) {
