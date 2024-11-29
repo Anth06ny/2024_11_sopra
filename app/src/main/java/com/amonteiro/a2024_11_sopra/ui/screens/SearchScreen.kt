@@ -35,9 +35,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.amonteiro.a2024_11_sopra.R
 import com.amonteiro.a2024_11_sopra.ui.MyError
 import com.amonteiro.a2024_11_sopra.ui.PictureRowItem
+import com.amonteiro.a2024_11_sopra.ui.Routes
 import com.amonteiro.a2024_11_sopra.ui.theme._2024_11_sopraTheme
 import com.amonteiro.a2024_11_sopra.viewmodel.MainViewModel
 
@@ -60,7 +62,7 @@ fun SearchScreenPreview() {
 }
 
 @Composable
-fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = viewModel ()) {
+fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = viewModel (),  navHostController: NavHostController? = null) {
 
     //collectAsStateWithLifecycle transforme en donnée observable pour compose
     val runInProgress by mainViewModel.runInProgress.collectAsStateWithLifecycle()
@@ -85,7 +87,9 @@ fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = v
         ) {
 
             items(list.size) {
-                PictureRowItem(data = list[it])
+                PictureRowItem(data = list[it], onPictureClick = {
+                    navHostController?.navigate(Routes.DetailScreen.withObject(list[it]))
+                })
             }
         }
 

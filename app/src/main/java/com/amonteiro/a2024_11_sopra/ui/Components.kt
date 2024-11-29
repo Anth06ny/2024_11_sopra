@@ -53,7 +53,7 @@ data class PictureBean(val id: Int, val url: String, val title: String, val long
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable //Composable affichant 1 PictureBean
-fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean) {
+fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean, onPictureClick: () -> Unit = {}) {
 
     //by evite juste de mettre les .value
     var expended by remember { mutableStateOf(false) }
@@ -62,6 +62,7 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: PictureBean) {
         modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.tertiaryContainer)
+            .clickable (onClick = onPictureClick)
     ) {
 
         //Permission Internet nécessaire

@@ -50,6 +50,9 @@ dependencies {
     //Cycle de vie du ViewModel =viewModel
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
+    //Navigation compose
+    implementation("androidx.navigation:navigation-compose:2.7.0")
+
 
 
     implementation(libs.androidx.core.ktx)
