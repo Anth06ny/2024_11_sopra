@@ -2,9 +2,9 @@ package com.amonteiro.a2024_11_sopra.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.amonteiro.a2024_11_sopra.model.PictureBean
 import com.amonteiro.a2024_11_sopra.model.WeatherBean
 import com.amonteiro.a2024_11_sopra.model.WeatherRepository
+import com.amonteiro.a2024_11_sopra.ui.PictureBean
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
